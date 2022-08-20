@@ -35,12 +35,13 @@ module.exports = configure(function (/* ctx */) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      // 'mdi-v5',
+      'mdi-v5',
       // 'fontawesome-v6',
       // 'eva-icons',
       // 'themify',
       // 'line-awesome',
-      // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
+      // 'roboto-font-latin-ext',
+      // this or either 'roboto-font', NEVER both!
 
       'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
@@ -53,7 +54,7 @@ module.exports = configure(function (/* ctx */) {
         node: 'node16',
       },
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -62,7 +63,11 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: {
+        SUPABASE_URL: 'https://gvzcryvaetkndntielit.supabase.co',
+        SUPABASE_KEY:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2emNyeXZhZXRrbmRudGllbGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjA4NzYxNDAsImV4cCI6MTk3NjQ1MjE0MH0.awjX-M0rcW52eeRQ3Y1MNJQ0xkvE_hp7t4O2X-vvtH4',
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -98,7 +103,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify'],
+      plugins: ['Notify', 'Dialog', 'Loading', 'LocalStorage'],
     },
 
     // animations: 'all', // --- includes all animations
