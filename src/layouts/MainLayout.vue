@@ -11,15 +11,15 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-toolbar-title> Boloko Food Ratings </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <!-- <div>Boloko v{{ $q.version }}</div> -->
       </q-toolbar>
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
+        <q-item-label header> Menu </q-item-label>
 
         <EssentialLink
           v-for="link in essentialLinks"
@@ -43,22 +43,22 @@ import EssentialLink, {
 
 const essentialLinks: EssentialLinkProps[] = [
   {
-    title: 'Food Rate',
+    title: 'Avaliar refeição',
     caption: 'De nota a uma comida',
     icon: 'food',
-    route: 'restaurants',
+    link: '/',
   },
   {
-    title: 'asdfasd',
-    caption: 'github.com/quasarframework',
+    title: 'Reviews',
+    caption: 'revisar avaliações feitas',
     icon: 'code',
-    link: 'restaurants',
+    link: 'review-list',
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
+    title: 'Restaurants',
+    caption: 'Restaurantes visitados',
     icon: 'chat',
-    link: 'https://chat.quasar.dev',
+    link: 'restaurant-list',
   },
   {
     title: 'Forum',

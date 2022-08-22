@@ -1,0 +1,83 @@
+<template>
+  <q-page padding>
+    <q-card class="my-card" v-for="review in reviews" :key="review.Id">
+      <!-- <q-img v-if="review?.fotos !== null" :src="review?.fotos[0]" /> -->
+
+      <q-carousel
+        v-if="review?.fotos !== null"
+        animated
+        v-model="slide"
+        arrows
+        navigation
+        thumbnails
+        swipeable
+        infinite
+      >
+        <q-carousel-slide
+          v-for="(foto, i) in review.fotos"
+          :key="i"
+          :name="i"
+          :img-src="foto"
+        />
+      </q-carousel>
+
+      <q-card-section>
+        <q-btn
+          fab
+          color="primary"
+          icon="place"
+          class="absolute"
+          style="top: 0; right: 12px; transform: translateY(-50%)"
+        />
+
+        <div class="row no-wrap items-center">
+          <div class="col text-h6 ellipsis">{{ review?.prato }}</div>
+          <div
+            class="col-auto text-grey text-caption q-pt-md row no-wrap items-center"
+          >
+            <q-icon name="place" />
+            250 ft
+          </div>
+        </div>
+
+        <q-rating v-model="stars" :max="5" size="32px" />
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        <div class="text-subtitle1">$・Italian, Cafe</div>
+        <div class="text-caption text-grey">
+          Small plates, salads & sandwiches in an intimate setting.
+        </div>
+      </q-card-section>
+
+      <q-separator />
+
+      <q-card-actions>
+        <q-btn flat round icon="event" />
+        <q-btn flat color="primary"> Reserve </q-btn>
+      </q-card-actions>
+    </q-card>
+  </q-page>
+</template>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { api } from 'boot/axios';
+const reviews = ref();
+const slide = ref(1);
+
+onMounted(() => {
+  getReviews();
+});
+
+function getReviews() {
+  api.get('/food').then((res) => {
+    reviews.value = res?.data?.list;
+  });
+}
+</script>
+
+<style lang="sass" scoped>
+.my-card
+  width: 100%
+  max-width: 80wh
+</style>

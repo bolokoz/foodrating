@@ -27,9 +27,7 @@
 </template>
 
 <script setup>
-import { useGeolocation } from '@vueuse/core';
-
-const { coords, locatedAt, error } = useGeolocation();
+// const { coords, locatedAt, error } = useGeolocation();
 import { useDialogPluginComponent } from 'quasar';
 const props = defineProps({
   // ...your custom props
@@ -57,7 +55,8 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
 function onOKClick() {
   // on OK, it is REQUIRED to
   // call onDialogOK (with optional payload)
-  onDialogOK({ coords, locatedAt });
+  // onDialogOK({ coords, locatedAt });
+  onDialogOK();
   // or with payload: onDialogOK({ ... })
   // ...and it will also hide the dialog automatically
 }
