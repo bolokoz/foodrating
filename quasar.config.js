@@ -63,11 +63,6 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      env: {
-        SUPABASE_URL: 'https://gvzcryvaetkndntielit.supabase.co',
-        SUPABASE_KEY:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2emNyeXZhZXRrbmRudGllbGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjA4NzYxNDAsImV4cCI6MTk3NjQ1MjE0MH0.awjX-M0rcW52eeRQ3Y1MNJQ0xkvE_hp7t4O2X-vvtH4',
-      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -90,7 +85,22 @@ module.exports = configure(function (/* ctx */) {
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
     framework: {
-      config: {},
+      config: {
+        brand: {
+          primary: '#04386b',
+          secondary: '#5fe3d6',
+          accent: '#c2ff73',
+
+          dark: '#1d1d1d',
+          'dark-page': '#121212',
+
+          positive: '#21BA45',
+          negative: '#C10015',
+          info: '#31CCEC',
+          warning: '#F2C037',
+        },
+        dark: 'auto', // or Boolean true/false
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
       lang: 'pt-BR', // Quasar language pack

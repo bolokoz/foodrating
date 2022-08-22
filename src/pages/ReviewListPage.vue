@@ -39,12 +39,37 @@
             250 ft
           </div>
         </div>
-
-        <q-rating v-model="stars" :max="5" size="32px" />
+      </q-card-section>
+      <q-card-section>
+        <div>
+          <span>Nota Sentimental: </span>
+          <q-rating
+            :model-value="review?.nota_sentimental"
+            :max="4"
+            size="1.5em"
+            color="grey"
+            :color-selected="ratingColors"
+          />
+          <span>{{ review?.nota_sentimental }} / 4 : Voltaria pra comer </span>
+        </div>
+        <br />
+        <div>
+          <span>Nota Técnica: </span>
+          <q-rating
+            :model-value="review?.nota_tecnica"
+            :max="5"
+            size="1.5em"
+            color="grey"
+            :color-selected="ratingColors2"
+          />
+          <span>{{ review?.nota_tecnica }} / 5 : Bem feita </span>
+        </div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        <div class="text-subtitle1">$・Italian, Cafe</div>
+        <div class="text-subtitle1">
+          R$ {{ review.valor }}・{{ review.restaurant[0]?.nome }}
+        </div>
         <div class="text-caption text-grey">
           Small plates, salads & sandwiches in an intimate setting.
         </div>
@@ -64,6 +89,20 @@ import { ref, onMounted } from 'vue';
 import { api } from 'boot/axios';
 const reviews = ref();
 const slide = ref(1);
+const ratingColors = [
+  'light-green-3',
+  'light-green-6',
+  'green',
+  'green-9',
+  'green-10',
+];
+const ratingColors2 = [
+  'light-blue-3',
+  'light-blue-6',
+  'blue',
+  'blue-9',
+  'blue-10',
+];
 
 onMounted(() => {
   getReviews();

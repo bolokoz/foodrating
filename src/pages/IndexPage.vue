@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row items-center justify-evenly">
+  <q-page padding class="row items-center justify-evenly">
     <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
       <q-date v-model="date" today-btn mask="YYYY-MM-DD"> </q-date>
 
@@ -19,7 +19,6 @@
         fill-input
         options-selected-class="text-deep-orange teal"
         lazy-rules
-        style="width: 250px"
         @filter="filterRestaurant"
         @new-value="newRestaurantCreated"
       >
@@ -123,10 +122,9 @@
 
       <div>
         <q-btn
-          label="Submit"
+          label="Enviar"
           type="submit"
           color="primary"
-          :disable="!uploaded"
           :loading="loading"
         />
         <q-btn

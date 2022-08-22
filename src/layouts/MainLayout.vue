@@ -14,6 +14,7 @@
         <q-toolbar-title> Boloko Food Ratings </q-toolbar-title>
 
         <!-- <div>Boloko v{{ $q.version }}</div> -->
+        <q-btn round icon="moon" @click="$q.dark.toggle()"></q-btn>
       </q-toolbar>
     </q-header>
 
@@ -59,30 +60,6 @@ const essentialLinks: EssentialLinkProps[] = [
     caption: 'Restaurantes visitados',
     icon: 'chat',
     link: 'restaurant-list',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
   },
 ];
 

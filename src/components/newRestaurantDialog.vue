@@ -1,22 +1,13 @@
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
+      <q-card-title> Criando restaurante {{ text }} </q-card-title>
       <q-card-section>
-        <div>lat {{ coords.latitude }}</div>
-        <div>lng {{ coords.longitude }}</div>
-        <div>acc {{ coords.accuracy }}</div>
-        <div>alt {{ coords.altitude }}</div>
-        <div>alt acc {{ coords.altitudeAccuracy }}</div>
-        <div>heading {{ coords.heading }}</div>
-        <div>speed {{ coords.speed }}</div>
-        <div>timestamp {{ coords.timestamp }}</div>
-        <div>located at {{ locatedAt }}</div>
-        <div>error {{ error }}</div>
-
-        {{ text }}
+        <div>lat {{ coords?.latitude }}</div>
+        <div>lng {{ coords?.longitude }}</div>
       </q-card-section>
 
-      <button @click="requestDevice()">Request Bluetooth Device</button>
+      <button @click="getLocation()">Get Location</button>
       <!-- buttons example -->
       <q-card-actions align="right">
         <q-btn color="primary" label="OK" @click="onOKClick" />
@@ -28,7 +19,9 @@
 
 <script setup>
 // const { coords, locatedAt, error } = useGeolocation();
+const coords = ref();
 import { useDialogPluginComponent } from 'quasar';
+import { ref } from 'vue';
 const props = defineProps({
   // ...your custom props
   text: {
@@ -55,9 +48,22 @@ const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
 function onOKClick() {
   // on OK, it is REQUIRED to
   // call onDialogOK (with optional payload)
-  // onDialogOK({ coords, locatedAt });
-  onDialogOK();
+  onDialogOK({ coords });
+  // onDialogOK();
   // or with payload: onDialogOK({ ... })
   // ...and it will also hide the dialog automatically
+}
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else {
+    x.innerHTML = 'Geolocation is not supported by this browser.';
+  }
+
+  function showPosition(position) {
+    console.log(position);
+    coords.value = position.coords;
+  }
 }
 </script>
