@@ -1,0 +1,362 @@
+<template>
+  <q-page padding>
+    <div class="row justify-center">
+      <div class="col-12 text-center">
+        <p class="text-h6">
+          {{ isUpdate ? 'Editar review' : 'Adicionar review' }}
+        </p>
+      </div>
+
+      <q-form
+        class="col-xs-12 q-gutter-y-md justify-center"
+        @submit.prevent="handleSubmit"
+      >
+        <div class="row justify-center">
+          <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-4">
+            <q-date
+              v-model="form.date"
+              today-btn
+              mask="YYYY-MM-DD"
+              style="width: 250px"
+            />
+          </div>
+
+          <div class="col-xs-12 col-sm-8 q-py-md q-gutter-y-md">
+            <q-input
+              v-model="form.prato"
+              label="Nome do prato"
+              filled
+              autogrow
+              type="textarea"
+            />
+
+            <q-select
+              label="Restaurante"
+              v-model.lazy="form.restaurant_id"
+              :options="restaurantSelect"
+              :loading="loading"
+              :disable="loading"
+              option-label="nome"
+              option-value="id"
+              use-chips
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              hide-selected
+              fill-input
+              @filter="filterRestaurant"
+              :rules="[(val) => val.length !== 0 || 'Requerido']"
+              lazy-rules
+              options-selected-class="text-deep-orange teal"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    <q-btn @click="handleCreateRestaurant()">
+                      Adicionar {{ newRestaurant }}?</q-btn
+                    >
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+
+            <q-input
+              label="Valor"
+              v-model="form.valor"
+              mask="#,##"
+              unmasked-value
+              fill-mask="0"
+              reverse-fill-mask
+              prefix="R$"
+              :loading="loading"
+              :disable="loading"
+            ></q-input>
+
+            <div>
+              Nota sentimental:
+              <q-rating
+                v-model="form.nota_sentimental"
+                size="2em"
+                hint
+                :max="4"
+                color="primary"
+              />
+            </div>
+            <q-input
+              filled
+              autogrow
+              v-model="form.comentario_sentimental"
+              label="Comentario sentimental"
+              lazy-rules
+            />
+          </div>
+        </div>
+
+        <q-separator></q-separator>
+
+        <div class="row justify-center">
+          <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-4">
+            <q-uploader
+              :factory="factoryFn"
+              label="Fotos do prato"
+              multiple
+              style="max-width: 300px"
+              :loading="loading"
+            />
+          </div>
+
+          <div class="col-xs-12 col-sm-8 q-py-md q-gutter-y-md">
+            <q-select
+              label="Tipo"
+              v-model="form.tipo"
+              use-chips
+              :options="tipoOptions"
+              :loading="loading"
+              :disable="loading"
+              options-selected-class="text-deep-orange"
+            />
+            <q-select
+              label="Período"
+              v-model="form.periodo"
+              :options="periodoOptions"
+              :loading="loading"
+              :disable="loading"
+              use-chips
+              :rules="[(val) => val !== null || 'Requerido']"
+              options-selected-class="text-deep-orange teal"
+            >
+            </q-select>
+            <div>
+              Nota tecnica:
+              <q-rating
+                v-model="form.nota_tecnica"
+                size="2em"
+                :max="5"
+                color="primary"
+              />
+            </div>
+
+            <q-input
+              filled
+              autogrow
+              v-model="form.comentario_tecnico"
+              label="Comentario Tecnico"
+              lazy-rules
+            />
+
+            <q-checkbox
+              v-model="form.delivery"
+              label="Delivery?"
+              color="success"
+            />
+          </div>
+        </div>
+        <q-btn
+          key="button1"
+          :label="isUpdate ? 'Editar' : 'Salvar'"
+          :color="isUpdate ? 'info' : 'primary'"
+          class="full-width"
+          rounded
+          :loading="loading"
+          :disable="loading"
+          type="submit"
+        ></q-btn>
+
+        <q-btn
+          key="button2"
+          label="Voltar"
+          color="warning"
+          class="full-width"
+          :loading="loading"
+          :disable="loading"
+          flat
+          :to="{ name: 'review' }"
+        ></q-btn>
+      </q-form>
+    </div>
+  </q-page>
+</template>
+
+<script setup>
+import useApi from 'src/composables/UseApi';
+
+import useNotify from 'src/composables/UseNotify';
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  computed,
+  defineAsyncComponent,
+} from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+// import TipoGasto from '../../components/TipoGasto.vue';
+
+// import SelectSupplier from './SelectSupplier.vue';
+
+const table = 'reviews';
+const returnRouteName = { name: 'review' };
+const router = useRouter();
+const route = useRoute();
+// const user = useAuthUser();
+const {
+  post,
+  simplePost,
+  getById,
+  update,
+  uploadImg,
+  list,
+  removeFile,
+  getAccountsFromProject,
+  listUniqueFromColumn,
+} = useApi();
+const { notifyNegative, notifySuccess } = useNotify();
+const loading = ref(false);
+let item = {};
+let tipos = ref([]);
+// let supplierNames = ref([]);
+// let supplierNew = ref('');
+const form = ref({
+  valor: 0,
+  prato: '',
+  date: '',
+  tipo: null,
+  periodo: null,
+  nota_sentimental: 0,
+  comentario_sentimental: '',
+  nota_tecnica: 0,
+  comentario_tecnico: '',
+  restaurant_id: null,
+  photos: [],
+});
+let nota = ref([]);
+let comprovante = ref([]);
+let periodoOptions = ref([]);
+let restaurantOptions = ref([]);
+let restaurantSelect = ref([]);
+const newRestaurant = ref('');
+let tipoOptions = ref([]);
+let methodOptions = ref(['TED', 'PIX', 'BOLETO', 'CARTÃO']);
+// verify if path has id, if so shows edit form
+const isUpdate = computed(() => route.params.id);
+onMounted(() => {
+  if (isUpdate.value) {
+    handleGetById(isUpdate.value);
+  }
+  handleListOptions();
+});
+const handleSubmit = async () => {
+  try {
+    loading.value = true;
+    if (comprovante.value?.length > 0) {
+      const receiptUrl = await uploadImg(comprovante.value[0], 'receipt');
+      form.value.receipt_url = receiptUrl;
+    }
+    if (nota.value?.length > 0) {
+      const invoiceUrl = await uploadImg(nota.value[0], 'invoice');
+      form.value.invoice_url = invoiceUrl;
+    }
+    if (isUpdate.value) {
+      await update(table, form.value);
+      notifySuccess('Editado com Sucesso');
+    } else {
+      await post(table, form.value);
+      notifySuccess('Adicionado com Sucesso');
+    }
+    loading.value = false;
+    router.push(returnRouteName);
+  } catch (error) {
+    notifyNegative(error.message);
+    loading.value = false;
+  }
+};
+const handleCreateRestaurant = async () => {
+  try {
+    loading.value = true;
+    await simplePost('supplier', { name: newRestaurant.value });
+    loading.value = false;
+    notifySuccess('Adicionado com Sucesso');
+    handleListOptions();
+  } catch (error) {
+    notifyNegative(error.message);
+    loading.value = false;
+  }
+};
+const handleListOptions = async () => {
+  try {
+    loading.value = true;
+    restaurantOptions.value = await list('restaurants');
+    restaurantSelect.value = restaurantOptions.value;
+    const list = await listUniqueFromColumn(table, 'tipo, periodo');
+    tipoOptions.value = list.map((d) => d.tipo);
+    periodoOptions.value = list.map((d) => d.periodo);
+    loading.value = false;
+  } catch (error) {
+    notifyNegative(error.message);
+    loading.value = false;
+  }
+};
+const handleGetById = async (id) => {
+  try {
+    loading.value = true;
+    item = await getById(table, id);
+    form.value = item;
+    loading.value = false;
+  } catch (error) {
+    notifyNegative(error.message);
+    loading.value = false;
+  }
+};
+function filterRestaurant(val, update) {
+  newRestaurant.value = val;
+  if (val === '') {
+    update(() => {
+      restaurantSelect.value = restaurantOptions.value;
+      // here you have access to "ref" which
+      // is the Vue reference of the QSelect
+    });
+    return;
+  }
+  update(() => {
+    const needle = val.toLowerCase();
+    restaurantSelect.value = restaurantOptions.value.filter(
+      (v) => v.nome.toLowerCase().indexOf(needle) > -1
+    );
+  });
+}
+function comprovanteAdded(file) {
+  comprovante.value = file;
+}
+async function comprovanteRemoved() {
+  try {
+    loading.value = true;
+    await removeFile(form.value.receipt_url, 'receipt');
+    comprovante.value = null;
+    form.value.receipt_url = null;
+    loading.value = false;
+    notifySuccess('Arquivo apagado');
+  } catch (error) {
+    notifyNegative(error.message);
+    loading.value = false;
+  }
+}
+function notaAdded(file) {
+  nota.value = file;
+}
+async function notaRemoved() {
+  try {
+    loading.value = true;
+    await removeFile(form.value.invoice_url, 'invoice');
+    nota.value = null;
+    form.value.invoice_url = null;
+    loading.value = false;
+  } catch (error) {
+    notifyNegative(error.message);
+    loading.value = false;
+  }
+}
+
+function getAccounts(val) {
+  getAccountsFromProject(val).then((res) => (periodoOptions.value = res));
+}
+</script>
