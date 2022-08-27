@@ -56,9 +56,7 @@ export default function useApi() {
     return data[0];
   };
   const post = async (table, form) => {
-    const { data, error } = await supabase
-      .from(table)
-      .insert([{ ...form, created_by: user.value.id }]);
+    const { data, error } = await supabase.from(table).insert([{ ...form }]);
     if (error) throw error;
     return data;
   };

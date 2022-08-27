@@ -12,10 +12,11 @@
         />
 
         <q-toolbar-title>
+          Boloko Food Ratings
           <!-- EngeBeck | {{ store.selectedProject.name }} -
           {{ $route.name }} -->
 
-          <q-breadcrumbs active-color="white" style="font-size: 16px">
+          <!-- <q-breadcrumbs active-color="white" style="font-size: 16px">
             <q-breadcrumbs-el label="EngeBeck" />
             <q-breadcrumbs-el :label="store.user.name" icon="profile" />
             <q-breadcrumbs-el
@@ -23,7 +24,7 @@
               icon="widgets"
             />
             <q-breadcrumbs-el :label="$route.name" />
-          </q-breadcrumbs>
+          </q-breadcrumbs> -->
         </q-toolbar-title>
         <q-btn-dropdown icon="person" flat>
           <q-list>
@@ -58,7 +59,7 @@
           </q-item-section>
         </q-item>
         <q-separator spaced />
-        <q-item-label header>Projeto atual</q-item-label>
+        <!-- <q-item-label header>Projeto atual</q-item-label>
 
         <q-item
           clickable
@@ -71,7 +72,7 @@
           </q-item-section>
 
           <q-item-section>{{ store.selectedProject?.name }}</q-item-section>
-        </q-item>
+        </q-item> -->
 
         <q-separator spaced />
 
@@ -226,14 +227,12 @@ export default defineComponent({
     });
 
     async function handleUserSettings() {
-      if (store.user.default_project !== null) {
-        store.selectedProject = await projectById(store.user.default_project);
-      } else {
-        router.replace({ name: 'project' });
-      }
-
+      // if (store.user.default_project !== null) {
+      //   store.selectedProject = await projectById(store.user.default_project);
+      // } else {
+      //   router.replace({ name: 'project' });
+      // }
       // const projectQuery = await supabase.from('project').select('*');
-
       // store.projects = projectQuery.data;
       // setBrand(config.value.primary, config.value.secondary);
     }

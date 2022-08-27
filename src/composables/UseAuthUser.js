@@ -10,8 +10,8 @@ export default function useAuthUser() {
   const login = async ({ email, password }) => {
     store.$reset();
     const { user, error } = await supabase.auth.signIn({ email, password });
-    const extraInfo = await getUserInfo(user.id);
-    store.user = { ...user, ...extraInfo[0] };
+    // const extraInfo = await getUserInfo(user.id);
+    // store.user = { ...user, ...extraInfo[0] };
     if (error) throw error;
     return error;
   };
