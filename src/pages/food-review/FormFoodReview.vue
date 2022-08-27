@@ -1,221 +1,228 @@
 <template>
-  <Suspense>
-    <q-page padding>
-      <!-- main content -->
-      <div class="row justify-center">
-        <div class="col-12 text-center">
-          <p class="text-h6">
-            {{ isUpdate ? 'Editar review' : 'Adicionar review' }}
-          </p>
+  <q-page padding>
+    <!-- main content -->
+    <div class="row justify-center">
+      <div class="col-12 text-center">
+        <p class="text-h6">
+          {{ isUpdate ? 'Editar review' : 'Adicionar review' }}
+        </p>
+      </div>
+
+      <q-form
+        class="col-xs-12 q-gutter-y-md justify-center"
+        @submit.prevent="handleSubmit"
+      >
+        <div class="row justify-center">
+          <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-4">
+            <q-date v-model="form.date" today-btn mask="YYYY-MM-DD" />
+          </div>
+
+          <div class="col-xs-12 col-sm-8 q-py-md q-gutter-y-md">
+            <q-input
+              v-model="form.prato"
+              label="Nome do prato"
+              filled
+              :rules="[(val) => val !== null || 'Requerido']"
+            />
+
+            <q-select
+              label="Restaurante"
+              v-model.lazy="form.restaurant_id"
+              :options="restaurantSelect"
+              :loading="loading"
+              :disable="loading"
+              option-label="nome"
+              option-value="id"
+              use-chips
+              filled
+              emit-value
+              map-options
+              use-input
+              input-debounce="0"
+              hide-selected
+              fill-input
+              @filter="filterRestaurant"
+              :rules="[(val) => val.length !== 0 || 'Requerido']"
+              lazy-rules
+              options-selected-class="text-deep-orange teal"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    <q-btn @click="handleCreateRestaurant()">
+                      Adicionar {{ newRestaurant }}?</q-btn
+                    >
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+
+            <q-input
+              label="Valor"
+              filled
+              v-model="form.valor"
+              mask="#,##"
+              unmasked-value
+              fill-mask="0"
+              reverse-fill-mask
+              prefix="R$"
+              :loading="loading"
+              :disable="loading"
+              :rules="[(val) => val !== 0 || 'Requerido']"
+            ></q-input>
+
+            <div>
+              Nota sentimental:
+              <q-rating
+                v-model="form.nota_sentimental"
+                size="2em"
+                hint
+                :max="4"
+                color="primary"
+                :rules="[(val) => val !== 0 || 'Requerido']"
+              />
+            </div>
+            <q-input
+              filled
+              autogrow
+              v-model="form.obs_sentimental"
+              label="Comentario sentimental"
+              lazy-rules
+            />
+          </div>
         </div>
 
-        <q-form
-          class="col-xs-12 q-gutter-y-md justify-center"
-          @submit.prevent="handleSubmit"
-        >
-          <div class="row justify-center">
-            <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-4">
-              <q-date
-                v-model="form.date"
-                today-btn
-                mask="YYYY-MM-DD"
-                style="width: 250px"
-              />
-            </div>
+        <q-separator></q-separator>
 
-            <div class="col-xs-12 col-sm-8 q-py-md q-gutter-y-md">
-              <q-input
-                v-model="form.prato"
-                label="Nome do prato"
-                filled
-                :rules="[(val) => val !== null || 'Requerido']"
-              />
+        <div class="row justify-center">
+          <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-4">
+            <q-uploader
+              label="Fotos do prato"
+              multiple
+              capture="user"
+              :loading="loading"
+              @added="addToState"
+              hide-upload-btn
+            />
 
-              <q-select
-                label="Restaurante"
-                v-model.lazy="form.restaurant_id"
-                :options="restaurantSelect"
-                :loading="loading"
-                :disable="loading"
-                option-label="nome"
-                option-value="id"
-                use-chips
-                emit-value
-                map-options
-                use-input
-                input-debounce="0"
-                hide-selected
-                fill-input
-                @filter="filterRestaurant"
-                :rules="[(val) => val.length !== 0 || 'Requerido']"
-                lazy-rules
-                options-selected-class="text-deep-orange teal"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">
-                      <q-btn @click="handleCreateRestaurant()">
-                        Adicionar {{ newRestaurant }}?</q-btn
-                      >
-                    </q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
+            <div v-if="isUpdate">
+              <div v-for="(photo, i) in form.photos" :key="photo">
+                <q-card class="my-card" flat bordered>
+                  <q-card-section horizontal>
+                    <q-img
+                      :src="photo"
+                      spinner-color="white"
+                      style="height: 140px; max-width: 150px"
+                    />
 
-              <q-input
-                label="Valor"
-                v-model="form.valor"
-                mask="#,##"
-                unmasked-value
-                fill-mask="0"
-                reverse-fill-mask
-                prefix="R$"
-                :loading="loading"
-                :disable="loading"
-                :rules="[(val) => val !== 0 || 'Requerido']"
-              ></q-input>
-
-              <div>
-                Nota sentimental:
-                <q-rating
-                  v-model="form.nota_sentimental"
-                  size="2em"
-                  hint
-                  :max="4"
-                  color="primary"
-                  :rules="[(val) => val !== 0 || 'Requerido']"
-                />
+                    <q-card-actions vertical class="justify-around">
+                      <q-btn
+                        flat
+                        round
+                        color="red"
+                        icon="delete"
+                        @click="form.photos.splice(i, 1)"
+                      />
+                    </q-card-actions>
+                  </q-card-section>
+                </q-card>
               </div>
-              <q-input
-                filled
-                autogrow
-                v-model="form.obs_sentimental"
-                label="Comentario sentimental"
-                lazy-rules
-              />
             </div>
           </div>
 
-          <q-separator></q-separator>
-
-          <div class="row justify-center">
-            <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-4">
-              <q-uploader
-                label="Fotos do prato"
-                multiple
-                style="max-width: 300px"
-                :loading="loading"
+          <div class="col-xs-12 col-sm-8 q-py-md q-gutter-y-md">
+            <q-select
+              label="Tipo"
+              filled
+              v-model="form.tipo"
+              use-chips
+              use-input
+              @new-value="createTipo"
+              @filter="filterTipo"
+              input-debounce="0"
+              :options="tipoSelect"
+              :loading="loading"
+              :disable="loading"
+              options-selected-class="text-deep-orange"
+            />
+            <q-select
+              label="Período"
+              filled
+              v-model="form.periodo"
+              :options="periodoOptions"
+              use-chips
+              use-input
+              @new-value="createPeriodo"
+              @filter="filterPeriodo"
+              input-debounce="0"
+              :loading="loading"
+              :disable="loading"
+              options-selected-class="text-deep-orange"
+            >
+            </q-select>
+            <div>
+              Nota tecnica:
+              <q-rating
+                v-model="form.nota_tecnica"
+                size="2em"
+                :max="5"
+                color="primary"
               />
             </div>
 
-            <div class="col-xs-12 col-sm-8 q-py-md q-gutter-y-md">
-              <q-select
-                label="Tipo"
-                v-model="form.tipo"
-                use-chips
-                use-input
-                @new-value="createTipo()"
-                @filter="filterTipo()"
-                :options="tipoOptions"
-                :loading="loading"
-                :disable="loading"
-                options-selected-class="text-deep-orange"
-              />
-              <q-select
-                label="Período"
-                v-model="form.periodo"
-                :options="periodoOptions"
-                :loading="loading"
-                :disable="loading"
-                use-chips
-                use-input
-                hide-dropdown-icon
-                input-debounce="0"
-                new-value-mode="add-unique"
-                options-selected-class="text-deep-orange teal"
-              >
-              </q-select>
-              <div>
-                Nota tecnica:
-                <q-rating
-                  v-model="form.nota_tecnica"
-                  size="2em"
-                  :max="5"
-                  color="primary"
-                />
-              </div>
+            <q-input
+              filled
+              autogrow
+              v-model="form.obs_tecnico"
+              label="Comentario Tecnico"
+              lazy-rules
+            />
 
-              <q-input
-                filled
-                autogrow
-                v-model="form.obs_tecnico"
-                label="Comentario Tecnico"
-                lazy-rules
-              />
-
-              <q-checkbox
-                v-model="form.delivery"
-                label="Delivery?"
-                color="success"
-              />
-            </div>
+            <q-checkbox
+              v-model="form.delivery"
+              label="Delivery?"
+              color="success"
+            />
           </div>
-          <q-btn
-            key="button1"
-            :label="isUpdate ? 'Editar' : 'Salvar'"
-            :color="isUpdate ? 'info' : 'primary'"
-            class="full-width"
-            rounded
-            :loading="loading"
-            :disable="loading"
-            type="submit"
-          ></q-btn>
+        </div>
+        <q-btn
+          key="button1"
+          :label="isUpdate ? 'Salvar Edição' : 'Salvar'"
+          :color="isUpdate ? 'info' : 'primary'"
+          class="full-width"
+          rounded
+          :loading="loading"
+          :disable="loading"
+          type="submit"
+        ></q-btn>
 
-          <q-btn
-            key="button2"
-            label="Voltar"
-            color="warning"
-            class="full-width"
-            :loading="loading"
-            :disable="loading"
-            flat
-            :to="{ name: 'review' }"
-          ></q-btn>
-        </q-form>
-      </div>
-      <!-- loading state -->
-      <template #fallback> Loading... </template>
-    </q-page>
-  </Suspense>
+        <q-btn
+          key="button2"
+          label="Voltar"
+          color="warning"
+          class="full-width"
+          :loading="loading"
+          :disable="loading"
+          flat
+          :to="{ name: 'review' }"
+        ></q-btn>
+      </q-form>
+    </div>
+  </q-page>
 </template>
 
 <script setup>
 import useApi from 'src/composables/UseApi';
 
 import useNotify from 'src/composables/UseNotify';
-import {
-  defineComponent,
-  ref,
-  onMounted,
-  computed,
-  defineAsyncComponent,
-} from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 const table = 'reviews';
-const returnRouteName = { name: 'review' };
+const returnRouteName = { name: 'form-food-review' };
 const router = useRouter();
 const route = useRoute();
-const {
-  post,
-  simplePost,
-  getById,
-  update,
-  uploadImg,
-  list,
-  removeFile,
-  getAccountsFromProject,
-  listUniqueFromColumn,
-} = useApi();
+const { post, simplePost, getById, update, uploadImg, list, removeFile } =
+  useApi();
 const { notifyNegative, notifySuccess } = useNotify();
 const loading = ref(false);
 let item = {};
@@ -235,14 +242,14 @@ const form = ref({
   restaurant_id: null,
   photos: [],
 });
-let nota = ref([]);
-let comprovante = ref([]);
 let periodoOptions = ref([]);
-const restaurantOptions = await list('restaurants');
-let restaurantSelect = ref([]);
+let periodoSelect = ref([]);
+const restaurantOptions = ref();
+const restaurantSelect = ref();
 const newRestaurant = ref('');
+const photosState = ref([]);
+let tipoSelect = ref([]);
 let tipoOptions = ref([]);
-let tipoOptionsRaw = ref([]);
 // verify if path has id, if so shows edit form
 const isUpdate = computed(() => route.params.id);
 onMounted(() => {
@@ -254,18 +261,19 @@ onMounted(() => {
 const handleSubmit = async () => {
   try {
     loading.value = true;
-    // if (comprovante.value?.length > 0) {
-    //   const receiptUrl = await uploadImg(comprovante.value[0], 'receipt');
-    //   form.value.receipt_url = receiptUrl;
-    // }
-    // if (nota.value?.length > 0) {
-    //   const invoiceUrl = await uploadImg(nota.value[0], 'invoice');
-    //   form.value.invoice_url = invoiceUrl;
-    // }
+    if (photosState.value.length > 0) {
+      for await (const photo of photosState.value) {
+        await uploadImg(photo, 'reviews').then((res) =>
+          form.value.photos.push(res)
+        );
+      }
+    }
     if (isUpdate.value) {
+      console.log('update', form.value);
       await update(table, form.value);
       notifySuccess('Editado com Sucesso');
     } else {
+      console.log('insert', form.value);
       await post(table, form.value);
       notifySuccess('Adicionado com Sucesso');
     }
@@ -291,13 +299,13 @@ const handleCreateRestaurant = async () => {
 const handleListOptions = async () => {
   try {
     loading.value = true;
-    // restaurantOptions.value = await list('restaurants');
+    restaurantOptions.value = await list('restaurants');
     const reviewList = await list(table);
     restaurantSelect.value = restaurantOptions.value;
-    tipoOptionsRaw.value = [
+    tipoOptions.value = [
       ...new Set(reviewList.map((d) => d.tipo).filter((d) => d)),
     ];
-    tipoOptions.value = tipoOptionsRaw.value;
+    tipoSelect.value = tipoOptions.value;
     periodoOptions.value = [
       ...new Set(reviewList.map((d) => d.periodo).filter((d) => d)),
     ];
@@ -312,6 +320,7 @@ const handleGetById = async (id) => {
     loading.value = true;
     item = await getById(table, id);
     form.value = item;
+
     loading.value = false;
   } catch (error) {
     notifyNegative(error.message);
@@ -335,37 +344,7 @@ function filterRestaurant(val, update) {
     );
   });
 }
-function comprovanteAdded(file) {
-  comprovante.value = file;
-}
-async function comprovanteRemoved() {
-  try {
-    loading.value = true;
-    await removeFile(form.value.receipt_url, 'receipt');
-    comprovante.value = null;
-    form.value.receipt_url = null;
-    loading.value = false;
-    notifySuccess('Arquivo apagado');
-  } catch (error) {
-    notifyNegative(error.message);
-    loading.value = false;
-  }
-}
 function createTipo(val, done) {
-  // Calling done(var) when new-value-mode is not set or "add", or done(var, "add") adds "var" content to the model
-  // and it resets the input textbox to empty string
-  // ----
-  // Calling done(var) when new-value-mode is "add-unique", or done(var, "add-unique") adds "var" content to the model
-  // only if is not already set
-  // and it resets the input textbox to empty string
-  // ----
-  // Calling done(var) when new-value-mode is "toggle", or done(var, "toggle") toggles the model with "var" content
-  // (adds to model if not already in the model, removes from model if already has it)
-  // and it resets the input textbox to empty string
-  // ----
-  // If "var" content is undefined/null, then it doesn't tampers with the model
-  // and only resets the input textbox to empty string
-
   if (val.length > 0) {
     if (!tipoOptions.value.includes(val)) {
       tipoOptions.value.push(val);
@@ -377,13 +356,38 @@ function createTipo(val, done) {
 function filterTipo(val, update) {
   update(() => {
     if (val === '') {
-      tipoOptions.value = tipoOptionsRaw.value;
+      tipoSelect.value = tipoOptions.value;
     } else {
       const needle = val.toLowerCase();
-      tipoOptions.value = tipoOptions.value.filter(
+      tipoSelect.value = tipoOptions.value.filter(
         (v) => v.toLowerCase().indexOf(needle) > -1
       );
     }
   });
+}
+function createPeriodo(val, done) {
+  if (val.length > 0) {
+    if (!periodoOptions.value.includes(val)) {
+      periodoOptions.value.push(val);
+    }
+    done(val, 'toggle');
+  }
+}
+
+function filterPeriodo(val, update) {
+  update(() => {
+    if (val === '') {
+      periodoSelect.value = periodoOptions.value;
+    } else {
+      const needle = val.toLowerCase();
+      periodoSelect.value = periodoOptions.value.filter(
+        (v) => v.toLowerCase().indexOf(needle) > -1
+      );
+    }
+  });
+}
+
+function addToState(filesArray) {
+  photosState.value = filesArray;
 }
 </script>
