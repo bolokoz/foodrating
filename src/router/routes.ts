@@ -60,7 +60,17 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'index',
-        component: () => import('pages/IndexPage.vue'),
+        component: () => import('pages/public/IndexPage.vue'),
+      },
+      {
+        path: 'restaurantes',
+        name: 'restaurantes',
+        component: () => import('pages/public/RestaurantList.vue'),
+      },
+      {
+        path: '',
+        name: 'index',
+        component: () => import('pages/public/IndexPage.vue'),
       },
       {
         path: 'login',

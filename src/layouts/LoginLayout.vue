@@ -9,7 +9,7 @@
           </div>
           <q-space />
           <q-separator dark vertical />
-          <q-btn stretch flat label="Reviews" />
+          <q-btn stretch flat label="Reviews" to="" exact />
           <q-separator dark vertical />
           <q-btn stretch flat label="Restaurantes" />
           <q-separator dark vertical />
