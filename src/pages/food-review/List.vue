@@ -65,7 +65,7 @@
         fab
         icon="mdi-plus"
         color="secondary"
-        :to="{ name: 'form-pagamento' }"
+        :to="{ name: 'form-food-review' }"
         v-if="$q.platform.is.mobile"
       >
         <q-tooltip>Adicionar</q-tooltip>
@@ -83,13 +83,13 @@ let desktopHeader = [
     field: 'date',
     sortable: true,
   },
-  {
-    name: 'valor',
-    align: 'left',
-    label: 'Valor',
-    field: (row) => row?.valor / 100,
-    sortable: true,
-  },
+  // {
+  //   name: 'valor',
+  //   align: 'left',
+  //   label: 'Valor',
+  //   field: (row) => row?.valor / 100,
+  //   sortable: true,
+  // },
   {
     name: 'prato',
     align: 'left',

@@ -50,7 +50,7 @@ export default route(function (/* { store, ssrContext } */) {
       to.meta.requiresAuth &&
       !Object.keys(to.query).includes('fromEmail')
     ) {
-      return { name: 'login' };
+      return { name: 'index' };
     }
   });
 

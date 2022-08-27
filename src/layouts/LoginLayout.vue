@@ -3,68 +3,27 @@
     <q-header elevated>
       <div class="bg-orange text-white">
         <q-toolbar>
-          <div>
-            <q-btn flat round dense icon="menu" class="q-mr-sm" />
-            <q-separator dark vertical inset />
-          </div>
+          <q-btn
+            v-if="$q.screen.lt.sm"
+            flat
+            round
+            dense
+            icon="menu"
+            class="q-mr-sm"
+            @click="drawer = !drawer"
+          />
+          <q-separator dark vertical inset />
+
           <q-space />
-          <q-separator dark vertical />
-          <q-btn stretch flat label="Reviews" to="" exact />
-          <q-separator dark vertical />
-          <q-btn stretch flat label="Restaurantes" />
-          <q-separator dark vertical />
-          <!-- <q-btn-dropdown stretch flat label="Dropdown">
-            <q-list>
-              <q-item-label header>Folders</q-item-label>
-              <q-item
-                v-for="n in 3"
-                :key="`x.${n}`"
-                clickable
-                v-close-popup
-                tabindex="0"
-              >
-                <q-item-section avatar>
-                  <q-avatar
-                    icon="folder"
-                    color="secondary"
-                    text-color="white"
-                  />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>Photos</q-item-label>
-                  <q-item-label caption>February 22, 2016</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-icon name="info" />
-                </q-item-section>
-              </q-item>
-              <q-separator inset spaced />
-              <q-item-label header>Files</q-item-label>
-              <q-item
-                v-for="n in 3"
-                :key="`y.${n}`"
-                clickable
-                v-close-popup
-                tabindex="0"
-              >
-                <q-item-section avatar>
-                  <q-avatar
-                    icon="assignment"
-                    color="primary"
-                    text-color="white"
-                  />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>Vacation</q-item-label>
-                  <q-item-label caption>February 22, 2016</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-icon name="info" />
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown> -->
-          <q-separator dark vertical />
+
+          <q-separator dark vertical inset />
+          <q-btn-group flat v-if="$q.screen.sm">
+            <q-btn stretch flat label="Reviews" to="/" />
+            <q-separator dark vertical />
+            <q-btn stretch flat label="Restaurantes" />
+            <q-separator dark vertical />
+          </q-btn-group>
+          <q-separator dark vertical inset />
           <q-btn
             flat
             round
@@ -82,22 +41,71 @@
       </div>
     </q-header>
 
+    <q-drawer
+      v-model="drawer"
+      show-if-above
+      :width="200"
+      dark
+      :breakpoint="500"
+      bordered
+    >
+      <q-scroll-area class="fit">
+        <q-list>
+          <template v-for="(menuItem, index) in menuList" :key="index">
+            <q-item clickable v-ripple :to="menuItem.link">
+              <q-item-section avatar>
+                <q-icon :name="menuItem.icon" />
+              </q-item-section>
+              <q-item-section>
+                {{ menuItem.label }}
+              </q-item-section>
+            </q-item>
+            <q-separator :key="'sep' + index" v-if="menuItem.separator" />
+          </template>
+        </q-list>
+      </q-scroll-area>
+    </q-drawer>
+
     <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { ref } from 'vue';
 
-export default defineComponent({
-  name: 'LoginLayout',
-
-  components: {},
-
-  setup() {
-    return {};
+const drawer = ref(false);
+const menuList = [
+  {
+    icon: 'inbox',
+    label: 'Reviews',
+    separator: true,
+    link: '/',
   },
-});
+  {
+    icon: 'inbox',
+    label: 'Restaurantes',
+    separator: true,
+    link: '/restaurantes',
+  },
+  {
+    icon: 'inbox',
+    label: 'Categorias',
+    separator: true,
+    link: '/categorias',
+  },
+  {
+    icon: 'inbox',
+    label: 'FAQ',
+    separator: true,
+    link: '/faq',
+  },
+];
 </script>
+
+<style scoped>
+.menu-list .q-item {
+  border-radius: 0 32px 32px 0;
+}
+</style>

@@ -26,31 +26,6 @@ const routes: RouteRecordRaw[] = [
         name: 'form-food-review',
         component: () => import('pages/food-review/FormFoodReview.vue'),
       },
-      // {
-      //   path: 'admin',
-      //   name: 'admin',
-      //   component: () => import('pages/admin/List.vue'),
-      // },
-      // {
-      //   path: 'admin/:id',
-      //   name: 'form-admin',
-      //   component: () => import('pages/admin/AdminForm.vue'),
-      // },
-      // {
-      //   path: 'form-profile',
-      //   name: 'form-profile',
-      //   component: () => import('src/pages/ProfileForm.vue'),
-      // },
-      // {
-      //   path: 'account',
-      //   name: 'account',
-      //   component: () => import('pages/contas/List.vue'),
-      // },
-      // {
-      //   path: 'account/:id',
-      //   name: 'form-account',
-      //   component: () => import('pages/contas/FormContas.vue'),
-      // },
     ],
   },
   {
@@ -66,11 +41,6 @@ const routes: RouteRecordRaw[] = [
         path: 'restaurantes',
         name: 'restaurantes',
         component: () => import('pages/public/RestaurantList.vue'),
-      },
-      {
-        path: '',
-        name: 'index',
-        component: () => import('pages/public/IndexPage.vue'),
       },
       {
         path: 'login',
