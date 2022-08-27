@@ -83,35 +83,25 @@
           :key="link.title"
           v-bind="link"
         />
-
-        <q-expansion-item
-          icon="mdi-mail"
-          label="Relatorios"
-          default-opened
-          :content-inset-level="0.5"
-        >
-          <q-item
-            v-for="item in relatoriosList"
-            :key="item.title"
-            clickable
-            :to="{ name: item.route }"
-            exact
-          >
-            <q-item-section v-if="item.icon" avatar>
-              <q-icon :name="item.icon"> </q-icon>
-            </q-item-section>
-
-            <q-item-section>
-              <q-item-label>{{ item.title }} </q-item-label>
-              <q-item-label caption> {{ item.caption }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-expansion-item>
       </q-list>
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <RouterView v-slot="{ Component }">
+        <template v-if="Component">
+          <Transition mode="out-in">
+            <KeepAlive>
+              <Suspense>
+                <!-- main content -->
+                <component :is="Component"></component>
+
+                <!-- loading state -->
+                <template #fallback> Loading... </template>
+              </Suspense>
+            </KeepAlive>
+          </Transition>
+        </template>
+      </RouterView>
     </q-page-container>
   </q-layout>
 </template>
@@ -128,67 +118,22 @@ const linksList = [
     link: 'home',
   },
   {
-    title: 'Perfil',
-    caption: '',
-    icon: 'mdi-account',
-    link: 'form-profile',
-  },
-  {
-    title: 'Food Reviews',
+    title: 'Food Review',
     caption: 'Add Food Review',
     icon: 'mdi-food',
-    link: 'form-food-review',
+    link: { name: 'form-food-review' },
   },
   {
-    title: 'Pagamentos',
-    caption: '',
+    title: 'List Reviews',
+    caption: 'Ver todas reviews',
     icon: 'mdi-cash',
-    link: 'pagamento',
+    link: { name: 'food-review' },
   },
   {
-    title: 'Receitas',
+    title: 'List Restaurants',
     caption: '',
     icon: 'mdi-receipt',
-    link: 'receita',
-  },
-  {
-    title: 'Fornecedores',
-    caption: '',
-    icon: 'mdi-factory',
-    link: 'supplier',
-  },
-  {
-    title: 'Projetos',
-    caption: '',
-    icon: 'mdi-home-group',
-    link: 'project',
-  },
-  {
-    title: 'Contas',
-    caption: '',
-    icon: 'mdi-bank',
-    link: 'account',
-  },
-  {
-    title: 'Categorias',
-    caption: '',
-    icon: 'mdi-shape',
-    link: 'category',
-  },
-];
-
-const relatoriosList = [
-  {
-    title: 'Resasrcimento',
-    caption: '',
-    icon: 'mdi-shape',
-    routeName: 'relatorio-ressarcimento',
-  },
-  {
-    title: 'Administracao',
-    caption: '',
-    icon: 'mdi-shape',
-    routeName: 'relatorio-administracao',
+    link: 'restaurant',
   },
 ];
 
@@ -261,7 +206,6 @@ export default defineComponent({
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
       user,
-      relatoriosList,
       store,
     };
   },
