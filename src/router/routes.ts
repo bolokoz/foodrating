@@ -12,24 +12,9 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/Home.vue'),
       },
       {
-        path: 'category',
-        name: 'category',
-        component: () => import('pages/category/List.vue'),
-      },
-      {
-        path: 'form-category/:id?',
-        name: 'form-category',
-        component: () => import('src/pages/category/FormCategory.vue'),
-      },
-      {
-        path: 'pagamento',
-        name: 'pagamento',
-        component: () => import('pages/pagamento/List.vue'),
-      },
-      {
-        path: 'form-pagamento/:id?',
-        name: 'form-pagamento',
-        component: () => import('pages/pagamento/FormPagamento.vue'),
+        path: 'restaurant',
+        name: 'restaurant',
+        component: () => import('pages/food-review/RestaurantsList.vue'),
       },
       {
         path: 'food-review',
@@ -41,78 +26,42 @@ const routes: RouteRecordRaw[] = [
         name: 'form-food-review',
         component: () => import('pages/food-review/FormFoodReview.vue'),
       },
-      {
-        path: 'receita',
-        name: 'receita',
-        component: () => import('pages/receita/List.vue'),
-      },
-      {
-        path: 'form-receita/:id?',
-        name: 'form-receita',
-        component: () => import('pages/receita/FormReceita.vue'),
-      },
-
-      {
-        path: 'form-profile',
-        name: 'form-profile',
-        component: () => import('src/pages/perfil/ProfileForm.vue'),
-      },
-      {
-        path: 'supplier',
-        name: 'supplier',
-        component: () => import('pages/fornecedor/List.vue'),
-      },
-      {
-        path: 'form-supplier/:id?',
-        name: 'form-supplier',
-        component: () => import('src/pages/fornecedor/SupplierForm.vue'),
-      },
-      {
-        path: 'project',
-        name: 'project',
-        component: () => import('pages/projeto/List.vue'),
-      },
-      {
-        path: 'form-project/:id?',
-        name: 'form-project',
-        component: () => import('src/pages/projeto/ProjectForm.vue'),
-      },
-      {
-        path: 'admin',
-        name: 'admin',
-        component: () => import('pages/admin/List.vue'),
-      },
-      {
-        path: 'admin/:id',
-        name: 'form-admin',
-        component: () => import('pages/admin/AdminForm.vue'),
-      },
-      {
-        path: 'account',
-        name: 'account',
-        component: () => import('pages/contas/List.vue'),
-      },
-      {
-        path: 'account/:id',
-        name: 'form-account',
-        component: () => import('pages/contas/FormContas.vue'),
-      },
-      {
-        path: 'relatorio/ressarcimento',
-        name: 'ressarcimento',
-        component: () => import('src/pages/relatorio/RessarcimentoPage.vue'),
-      },
-      {
-        path: 'relatorio/administracao',
-        name: 'relatorio-administracao',
-        component: () => import('src/pages/relatorio/AdministracaoPage.vue'),
-      },
+      // {
+      //   path: 'admin',
+      //   name: 'admin',
+      //   component: () => import('pages/admin/List.vue'),
+      // },
+      // {
+      //   path: 'admin/:id',
+      //   name: 'form-admin',
+      //   component: () => import('pages/admin/AdminForm.vue'),
+      // },
+      // {
+      //   path: 'form-profile',
+      //   name: 'form-profile',
+      //   component: () => import('src/pages/ProfileForm.vue'),
+      // },
+      // {
+      //   path: 'account',
+      //   name: 'account',
+      //   component: () => import('pages/contas/List.vue'),
+      // },
+      // {
+      //   path: 'account/:id',
+      //   name: 'form-account',
+      //   component: () => import('pages/contas/FormContas.vue'),
+      // },
     ],
   },
   {
     path: '/',
     component: () => import('layouts/LoginLayout.vue'),
     children: [
+      {
+        path: '',
+        name: 'index',
+        component: () => import('pages/IndexPage.vue'),
+      },
       {
         path: 'login',
         name: 'login',

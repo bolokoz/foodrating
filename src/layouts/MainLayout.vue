@@ -28,11 +28,11 @@
         </q-toolbar-title>
         <q-btn-dropdown icon="person" flat>
           <q-list>
-            <q-item clickable v-close-popup @click="handleProfile">
+            <!-- <q-item clickable v-close-popup @click="handleProfile">
               <q-item-section>
                 <q-item-label>Perfil</q-item-label>
               </q-item-section>
-            </q-item>
+            </q-item> -->
             <q-item clickable v-close-popup @click="handleLogout">
               <q-item-section>
                 <q-item-label>Logout</q-item-label>
@@ -45,7 +45,7 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list bordered padding>
-        <q-item-label header>Usuario</q-item-label>
+        <!-- <q-item-label header>Usuario</q-item-label>
         <q-item clickable v-ripple to="form-profile">
           <q-item-section avatar>
             <q-avatar>
@@ -58,7 +58,7 @@
             <q-item-label caption>Clique para editar</q-item-label>
           </q-item-section>
         </q-item>
-        <q-separator spaced />
+        <q-separator spaced /> -->
         <!-- <q-item-label header>Projeto atual</q-item-label>
 
         <q-item
@@ -74,15 +74,27 @@
           <q-item-section>{{ store.selectedProject?.name }}</q-item-section>
         </q-item> -->
 
-        <q-separator spaced />
+        <!-- <q-separator spaced /> -->
 
         <q-item-label header> Menu </q-item-label>
 
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item
+          v-for="(link, i) in linksList"
+          :key="i"
+          clickable
+          tag="a"
+          :to="link.link"
+          exact
+        >
+          <q-item-section v-if="link.icon" avatar>
+            <q-icon :name="link.icon" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>{{ link.title }}</q-item-label>
+            <q-item-label caption>{{ link.caption }}</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -112,10 +124,10 @@ import EssentialLink from 'components/EssentialLink.vue';
 
 const linksList = [
   {
-    title: 'Home',
+    title: 'Public view',
     caption: '',
     icon: 'mdi-home',
-    link: 'home',
+    link: { name: 'index' },
   },
   {
     title: 'Food Review',
@@ -207,6 +219,7 @@ export default defineComponent({
       },
       user,
       store,
+      linksList,
     };
   },
 });
