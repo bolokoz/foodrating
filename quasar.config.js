@@ -53,7 +53,11 @@ module.exports = configure(function (/* ctx */) {
         browser: ['es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1'],
         node: 'node16',
       },
-      env: require('dotenv').config().parsed,
+      env: {
+        SUPABASE_URL: 'https://gvzcryvaetkndntielit.supabase.co',
+        SUPABASE_KEY:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2emNyeXZhZXRrbmRudGllbGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjA4NzYxNDAsImV4cCI6MTk3NjQ1MjE0MH0.awjX-M0rcW52eeRQ3Y1MNJQ0xkvE_hp7t4O2X-vvtH4',
+      },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,

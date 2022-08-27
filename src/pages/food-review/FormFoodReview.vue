@@ -204,7 +204,7 @@
           :loading="loading"
           :disable="loading"
           flat
-          :to="{ name: 'review' }"
+          :to="{ name: 'food-review' }"
         ></q-btn>
       </q-form>
     </div>
@@ -278,7 +278,7 @@ const handleSubmit = async () => {
       notifySuccess('Adicionado com Sucesso');
     }
     loading.value = false;
-    router.push(returnRouteName);
+    router.push({ name: 'food-review' });
   } catch (error) {
     notifyNegative(error.message);
     loading.value = false;
