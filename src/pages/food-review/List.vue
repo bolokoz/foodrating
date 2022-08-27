@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="q-pa-md">
       <q-table
-        :title="`Pagamentos: ${store.selectedProject?.name}`"
+        title="Reviews"
         :columns="desktopHeader"
         :rows="items"
         color="primary"
@@ -18,7 +18,7 @@
             color="primary"
             icon-right="mdi-plus"
             label="Adicionar"
-            :to="{ name: 'form-pagamento' }"
+            :to="{ name: 'form-food-review' }"
           />
 
           <q-btn
@@ -84,31 +84,24 @@ let desktopHeader = [
     sortable: true,
   },
   {
-    name: 'amount',
+    name: 'valor',
     align: 'left',
     label: 'Valor',
-    field: (row) => row?.amount / 100,
+    field: (row) => row?.valor / 100,
     sortable: true,
   },
   {
-    name: 'description',
+    name: 'prato',
     align: 'left',
-    label: 'Descrição',
-    field: 'description',
+    label: 'Prato',
+    field: 'prato',
     sortable: false,
   },
   {
-    name: 'supplier',
+    name: 'restaurant',
     align: 'left',
-    label: 'Fornecedor',
-    field: (row) => row?.supplier?.name,
-    sortable: false,
-  },
-  {
-    name: 'project',
-    align: 'left',
-    label: 'Projeto',
-    field: (row) => row?.project?.name,
+    label: 'Restaurant',
+    field: (row) => row?.restaurants?.nome,
     sortable: false,
   },
   {
@@ -127,7 +120,6 @@ import { useRouter } from 'vue-router';
 import useSupabase from 'src/boot/supabase';
 import useAuthUser from 'src/composables/UseAuthUser';
 import { useQuasar } from 'quasar';
-import { useUserConfigStore } from 'src/stores/userConfig';
 
 export default defineComponent({
   name: 'PagePagamento',
@@ -137,14 +129,13 @@ export default defineComponent({
   //   return store;
   // },
   setup() {
-    const table = 'payment';
+    const table = 'reviews';
     const items = ref([]);
     const { remove } = useApi();
     const { notifyNegative, notifyWarning } = useNotify();
     const router = useRouter();
     const loading = ref(true);
     const { user } = useAuthUser();
-    const store = useUserConfigStore();
     const projectId = null;
 
     const $q = useQuasar();
@@ -161,13 +152,8 @@ export default defineComponent({
         const { data, error } = await supabase.from(table).select(
           `
           id,
-          amount,
-          date,
-          description,
-          supplier:supplier_id ( name ),
-          project!inner(name,profiles)
-          account:account_id ( name ),
-        `
+          valor,
+          date, prato, restaurants (nome)        `
         );
         // .eq('project_id', projectId);
         // console.log('store access', store.selectedProject.id);
@@ -199,11 +185,11 @@ export default defineComponent({
     };
 
     const handleEdit = (item) => {
-      router.push({ name: 'form-pagamento', params: { id: item.id } });
+      router.push({ name: 'form-food-review', params: { id: item.id } });
     };
 
     const handleExport = (item) => {
-      router.push({ name: 'form-pagamento', params: { id: item.id } });
+      router.push({ name: 'form-food-review', params: { id: item.id } });
     };
 
     onMounted(() => {
@@ -220,7 +206,6 @@ export default defineComponent({
       handleExport,
       reais,
       user,
-      store,
     };
   },
 });
