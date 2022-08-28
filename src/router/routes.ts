@@ -12,6 +12,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/Home.vue'),
       },
       {
+        path: 'form-restaurant/:id?',
+        name: 'form-restaurant',
+        component: () => import('pages/food-review/FormRestaurant.vue'),
+      },
+      {
         path: 'restaurant',
         name: 'restaurant',
         component: () => import('pages/food-review/RestaurantsList.vue'),
@@ -19,7 +24,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'food-review',
         name: 'food-review',
-        component: () => import('pages/food-review/List.vue'),
+        component: () => import('pages/food-review/ReviewList.vue'),
       },
       {
         path: 'form-food-review/:id?',

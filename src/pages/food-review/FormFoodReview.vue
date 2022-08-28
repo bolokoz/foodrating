@@ -287,7 +287,7 @@ const handleSubmit = async () => {
 const handleCreateRestaurant = async () => {
   try {
     loading.value = true;
-    await simplePost('supplier', { name: newRestaurant.value });
+    await simplePost('restaurants', { nome: newRestaurant.value });
     loading.value = false;
     notifySuccess('Adicionado com Sucesso');
     handleListOptions();
