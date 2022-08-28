@@ -43,8 +43,8 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list bordered padding>
+    <q-drawer v-model="leftDrawerOpen" show-if-above>
+      <q-list padding>
         <!-- <q-item-label header>Usuario</q-item-label>
         <q-item clickable v-ripple to="form-profile">
           <q-item-section avatar>

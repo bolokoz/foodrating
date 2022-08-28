@@ -59,9 +59,17 @@
               <q-item-section>
                 {{ menuItem.label }}
               </q-item-section>
+              <q-separator :key="'sep' + index" v-if="menuItem.separator" />
             </q-item>
-            <q-separator :key="'sep' + index" v-if="menuItem.separator" />
           </template>
+          <q-space></q-space>
+          <q-separator></q-separator>
+          <q-item clickable v-ripple :to="{ name: 'login' }">
+            <q-item-section avatar>
+              <q-icon name="login" />
+            </q-item-section>
+            <q-item-section> Login </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
     </q-drawer>

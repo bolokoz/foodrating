@@ -66,7 +66,7 @@ export default defineComponent({
     const { notifyNegative, notifySuccess } = useNotify();
 
     onMounted(() => {
-      if (isLoggedIn) {
+      if (!isLoggedIn) {
         router.push({ name: 'home' });
       }
     });
