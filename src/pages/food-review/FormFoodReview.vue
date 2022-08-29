@@ -99,7 +99,6 @@
             <q-uploader
               label="Fotos do prato"
               multiple
-              capture="environment"
               :loading="loading"
               @added="addToState"
               hide-upload-btn
