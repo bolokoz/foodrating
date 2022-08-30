@@ -42,6 +42,7 @@
             @result="handleResult"
           >
           </mapbox-geocoder-control>
+
           <mapbox-marker
             :lngLat="[mlng, mlat]"
             :draggable="true"
@@ -97,8 +98,7 @@ import {
 
 const myAccessToken =
   'pk.eyJ1IjoiYm9sb2tvem9yZCIsImEiOiJjbDdkd3doeGkxNmxsM3Vxb2V2ZHU1bHptIn0.Fv6KN808iR-NcgYUoX91gw';
-// const mapContainer = ref(null);
-// const map = ref(null);
+
 const lat = ref(-54.5816576);
 const lng = ref(-20.4505088);
 const mlat = ref(-54.5816576);
@@ -106,9 +106,6 @@ const mlng = ref(-20.4505088);
 
 const table = 'restaurants';
 
-// watchEffect(() => {
-//   if (map.value?.current) return;
-// });
 const returnRouteName = { name: 'restaurant' };
 const router = useRouter();
 const route = useRoute();
@@ -135,14 +132,20 @@ function handleResult(response) {
 }
 
 function mapUpdate(e) {
-  console.log('map udpate', e);
-  mlng.value = e[0];
-  mlat.value = e[1];
+  // console.log('map udpate', e);
+  // mlng.value = e[0];
+  // mlat.value = e[1];
+  // [lat.value, lng.value] = [
+  //   (Math.random() - 0.5) * 360,
+  //   (Math.random() - 0.5) * 100,
+  // ];
 }
 
 onMounted(() => {
   if (isUpdate.value) {
     handleGetById(isUpdate.value);
+  } else {
+    getLocation();
   }
   handleListOptions();
 });
@@ -173,9 +176,10 @@ const handleSubmit = async () => {
   }
 };
 function handleDragend(e) {
-  console.log(e);
-  lat.value = e.target._lngLat.lat;
-  lng.value = e.target._lngLat.lng;
+  console.log('handle dragend', e.target._lngLat.lat);
+  mlat.value = e.target._lngLat.lat;
+  mlng.value = e.target._lngLat.lng;
+  form.value.latlng = [mlat.value, mlng.value].toString();
 }
 
 // function mapLoaded() {
@@ -193,47 +197,58 @@ const handleCreateRestaurant = async () => {
     loading.value = false;
   }
 };
+async function getLocation() {
+  await navigator.geolocation.getCurrentPosition((pos) => {
+    // console.log(pos.coords);
+    lat.value = pos?.coords.latitude;
+    lng.value = pos?.coords.longitude;
+    // console.log('arr', arr);
+    browserLocation.value = {
+      lat: pos?.coords.latitude,
+      lng: pos?.coords.longitude,
+    };
+    marker.value = [lat.value, lng.value];
+  });
+}
 const handleListOptions = async () => {
   try {
     loading.value = true;
-    await navigator.geolocation.getCurrentPosition((pos) => {
-      // console.log(pos.coords);
-      lat.value = pos?.coords.latitude;
-      lng.value = pos?.coords.longitude;
-      // console.log('arr', arr);
-      browserLocation.value = {
-        lat: pos?.coords.latitude,
-        lng: pos?.coords.longitude,
-      };
-      marker.value = [lat.value, lng.value];
-      // loadMap(pos?.coords.latitude, pos?.coords.longitude);
-    });
+
     loading.value = false;
   } catch (error) {
     notifyNegative(error.message);
     loading.value = false;
   }
 };
-const loadMap = async (lat: number, lng: number) => {
-  mapboxgl.accessToken = myAccessToken;
-  console.log('location', lat, lng);
-  map.value = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/dark-v9',
-    center: [lng, lat],
-    zoom: 14,
-  });
-  map.value.on('load', (e) => {
-    console.log('map loaded', e);
-  });
-  return {};
-};
+// const loadMap = async (lat: number, lng: number) => {
+//   mapboxgl.accessToken = myAccessToken;
+//   console.log('location', lat, lng);
+//   map.value = new mapboxgl.Map({
+//     container: 'map',
+//     style: 'mapbox://styles/mapbox/dark-v9',
+//     center: [lng, lat],
+//     zoom: 14,
+//   });
+//   map.value.on('load', (e) => {
+//     console.log('map loaded', e);
+//   });
+//   return {};
+// };
 const handleGetById = async (id) => {
   try {
     loading.value = true;
     item = await getById(table, id);
     form.value = item;
-    marker.value = form.value?.latlng;
+    [mlat.value, mlng.value] = form.value?.latlng
+      .split(',')
+      .map(Number)
+      .map((a) => a.toFixed(4))
+      .map(Number);
+    [lat.value, lng.value] = form.value?.latlng
+      .split(',')
+      .map(Number)
+      .map((a) => a.toFixed(4))
+      .map(Number);
     loading.value = false;
   } catch (error) {
     notifyNegative(error.message);

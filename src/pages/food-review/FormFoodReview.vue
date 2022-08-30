@@ -13,11 +13,11 @@
         @submit.prevent="handleSubmit"
       >
         <div class="row justify-center">
-          <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-4">
+          <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-6">
             <q-date v-model="form.date" today-btn mask="YYYY-MM-DD" />
           </div>
 
-          <div class="col-xs-12 col-sm-8 q-py-md q-gutter-y-md">
+          <div class="col-xs-12 col-sm-6 q-py-md q-gutter-y-md">
             <q-input
               v-model="form.prato"
               label="Nome do prato"
@@ -95,7 +95,7 @@
         <q-separator></q-separator>
 
         <div class="row justify-center">
-          <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-4">
+          <div class="q-pr-lg q-pt-md text-center col-xs-12 col-sm-6">
             <q-uploader
               label="Fotos do prato"
               multiple
@@ -129,7 +129,7 @@
             </div>
           </div>
 
-          <div class="col-xs-12 col-sm-8 q-py-md q-gutter-y-md">
+          <div class="col-xs-12 col-sm-6 q-py-md q-gutter-y-md">
             <q-select
               label="Tipo"
               filled
