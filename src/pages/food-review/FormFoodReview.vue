@@ -142,6 +142,7 @@
               :options="tipoSelect"
               :loading="loading"
               :disable="loading"
+              type="text"
               options-selected-class="text-deep-orange"
             />
             <q-select
@@ -150,6 +151,7 @@
               v-model="form.periodo"
               :options="periodoOptions"
               use-chips
+              type="text"
               use-input
               @new-value="createPeriodo"
               @filter="filterPeriodo"
@@ -256,6 +258,22 @@ onMounted(() => {
     handleGetById(isUpdate.value);
   }
   handleListOptions();
+});
+
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  // Se esta for uma solicitação POST de entrada para a
+  // URL de "ação" registrada, responda a ela.
+  if (event.request.method === 'POST' && url.pathname === '/form-food-review') {
+    event.respondWith(
+      (async () => {
+        const formData = await event.request.formData();
+        const link = formData.get('link') || '';
+        const responseUrl = await saveBookmark(link);
+        return Response.redirect(responseUrl, 303);
+      })()
+    );
+  }
 });
 const handleSubmit = async () => {
   try {
