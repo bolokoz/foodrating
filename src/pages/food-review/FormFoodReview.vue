@@ -218,6 +218,9 @@ import useApi from 'src/composables/UseApi';
 import useNotify from 'src/composables/UseNotify';
 import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+
+import Compressor from 'compressorjs';
+
 const table = 'reviews';
 const returnRouteName = { name: 'form-food-review' };
 const router = useRouter();
@@ -280,9 +283,31 @@ const handleSubmit = async () => {
     loading.value = true;
     if (photosState.value.length > 0) {
       for await (const photo of photosState.value) {
-        await uploadImg(photo, 'reviews').then((res) =>
-          form.value.photos.push(res)
-        );
+        let compressed = null;
+        await new Compressor(photo, {
+          quality: 0.3,
+          convertTypes: ['image/jpeg'],
+          success(result) {
+            console.log('compressor result', result);
+            console.log('original photo file', photo);
+            const formData = new FormData();
+
+            // The third parameter is required for server
+            formData.append('file', result);
+            console.log('formdata compressor', formData);
+            compressed = new File([result], result?.name, {
+              type: 'image/jpeg',
+            });
+            console.log('compresssed new file', compressed);
+            return uploadImg(compressed, 'reviews').then((res) => {
+              console.log('image uploaded');
+              form.value.photos.push(res);
+            });
+          },
+          error(er) {
+            console.log('compressor error', er);
+          },
+        });
       }
     }
     if (isUpdate.value) {

@@ -93,7 +93,9 @@ export default function useApi() {
   };
 
   const uploadImg = async (file, storage) => {
-    const fileExtension = file.name.split('.').pop();
+    console.log('API uploadimg, file = ', file);
+    console.log('API uploadimg, file extension = ', file?.name?.split('.'));
+    const fileExtension = file?.name?.split('.').pop();
     const fileName = uuidv4() + '.' + fileExtension;
     const { data, error } = await supabase.storage
       .from(storage)

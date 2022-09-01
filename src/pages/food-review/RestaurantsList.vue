@@ -18,7 +18,7 @@
           :key="photo"
           :name="i"
           class="column no-wrap flex-center"
-          :img-src="resizeAPI(photo)"
+          :img-src="photo"
         />
       </q-carousel>
 
@@ -34,7 +34,14 @@
         <div class="row no-wrap items-center">
           <div class="col text-h6 ellipsis">{{ restaurant.nome }}</div>
           <div
-            class="col-auto text-grey text-caption q-pt-md row no-wrap items-center"
+            class="
+              col-auto
+              text-grey text-caption
+              q-pt-md
+              row
+              no-wrap
+              items-center
+            "
           >
             <q-icon name="place" />
             250 ft
@@ -125,7 +132,7 @@ function resizeAPI(url) {
   let file = parsed.toString().split('/').pop();
   // console.log('parserd url', last);
   let complete = `https://supacdntransform.vercel.app/api/resize?f=${file}&b=reviews&q=20`;
-  console.log('final', complete);
+  // console.log('final', complete);
 
   return complete;
 }
