@@ -1,12 +1,13 @@
 <template>
   <q-page padding class="q-gutter-md">
     <q-card
-      v-for="restaurant in cards"
+      v-for="restaurant in restCards"
       :key="restaurant.id"
       class="bg-primary my-card"
     >
       <!-- <q-img :src="restaurant.reviews?.photos[0]" /> -->
       <q-carousel
+        v-if="restaurant?.photos?.length > 0"
         animated
         arrows
         navigation
@@ -34,14 +35,7 @@
         <div class="row no-wrap items-center">
           <div class="col text-h6 ellipsis">{{ restaurant.nome }}</div>
           <div
-            class="
-              col-auto
-              text-grey text-caption
-              q-pt-md
-              row
-              no-wrap
-              items-center
-            "
+            class="col-auto text-grey text-caption q-pt-md row no-wrap items-center"
           >
             <q-icon name="place" />
             250 ft
@@ -77,51 +71,83 @@
 <script setup>
 import useApi from 'src/composables/UseApi';
 import { useRouter } from 'vue-router';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 const { list, supabase } = useApi();
 const router = useRouter();
 
-const restaurants = await list('restaurants');
+const restCards = ref([]);
+
+const restaurants = await list('restaurants', 'created_at').then(
+  (res) => (restCards.value = res)
+);
 const reviews = await supabase.from('reviews').select('*,restaurants!inner(*)');
 
-const cards = computed(() => {
-  let array = reviews.data;
-
-  //create unique list of restaurants
-  let restaurants = [...new Set(array.map((review) => review.restaurants))];
-
-  // loop through each review and add info to the restaurant list
-  array.forEach((review) => {
-    let found = restaurants.find(
-      (restaurant) => restaurant.id === review.restaurant_id
-    );
-    // group photos
-    found.hasOwnProperty('photos')
-      ? found.photos.concat(review?.photos)
-      : (found.photos = review?.photos);
-
-    // group meals
-    found.hasOwnProperty('pratos')
-      ? found.pratos.concat(review?.prato)
-      : (found.pratos = [review?.prato]);
-    // group tipos
-    found.hasOwnProperty('tipos')
-      ? found.tipos.concat(review?.tipo)
-      : (found.tipos = [review?.tipo]);
-    // group dates
-    found.hasOwnProperty('date')
-      ? found.date.concat(review?.date)
-      : (found.date = [review?.date]);
-    // group valor
-    found.hasOwnProperty('valor')
-      ? found.valor.concat(review?.valor)
-      : (found.valor = [review?.valor]);
+onMounted(() => {
+  reviews.data.forEach((rev) => {
+    let found = restCards.value.find((rest) => rest.id == rev.restaurant_id);
+    // console.log('rev', rev, 'found', found);
+    // add reviews
+    if (typeof found.review != undefined && found.review instanceof Array) {
+      found.reviews.push(rev);
+    } else {
+      found.reviews = [rev];
+    }
+    // add photos
+    if (typeof found.photos != undefined && found.photos instanceof Array) {
+      found.photos.concat(rev.photos);
+    } else {
+      found.photos = rev.photos;
+    }
     // add model for carousel
     found.model = 0;
   });
-  return restaurants;
 });
+
+// const restCards = computed(() => {
+//   let cards = restaurants;
+//   let revs = reviews.data;
+
+//   return cards;
+// });
+
+// const cards = computed(() => {
+//   let array = reviews.data;
+
+//   //create unique list of restaurants
+//   let restaurants = [...new Set(array.map((review) => review.restaurants))];
+
+//   // loop through each review and add info to the restaurant list
+//   array.forEach((review) => {
+//     let found = restaurants.find(
+//       (restaurant) => restaurant.id === review.restaurant_id
+//     );
+//     // group photos
+//     found.hasOwnProperty('photos')
+//       ? found.photos.concat(review?.photos)
+//       : (found.photos = review?.photos);
+
+//     // group meals
+//     found.hasOwnProperty('pratos')
+//       ? found.pratos.concat(review?.prato)
+//       : (found.pratos = [review?.prato]);
+//     // group tipos
+//     found.hasOwnProperty('tipos')
+//       ? found.tipos.concat(review?.tipo)
+//       : (found.tipos = [review?.tipo]);
+//     // group dates
+//     found.hasOwnProperty('date')
+//       ? found.date.concat(review?.date)
+//       : (found.date = [review?.date]);
+//     // group valor
+//     found.hasOwnProperty('valor')
+//       ? found.valor.concat(review?.valor)
+//       : (found.valor = [review?.valor]);
+//     // add model for carousel
+//     found.model = 0;
+//   });
+//   return restaurants;
+// });
 
 const edit = (id) => {
   router.push({ name: 'form-restaurant', params: { id: id } });

@@ -102,13 +102,31 @@
       <RouterView v-slot="{ Component }">
         <template v-if="Component">
           <Transition mode="out-in">
-            <Suspense>
-              <!-- main content -->
-              <component :is="Component"></component>
+            <div>
+              <Suspense>
+                <!-- main content -->
+                <component :is="Component"></component>
 
-              <!-- loading state -->
-              <template #fallback> Loading... </template>
-            </Suspense>
+                <!-- loading state -->
+                <template #fallback>
+                  <div>
+                    <q-linear-progress
+                      dark
+                      rounded
+                      indeterminate
+                      color="secondary"
+                      class="q-mt-sm"
+                    />
+                    <q-inner-loading
+                      :showing="true"
+                      label="Carregando..."
+                      label-class="text-teal"
+                      label-style="font-size: 1.1em"
+                    />
+                  </div>
+                </template>
+              </Suspense>
+            </div>
           </Transition>
         </template>
       </RouterView>

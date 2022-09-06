@@ -278,36 +278,46 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
+
+async function compress(file) {
+  console.log('compress ', file);
+  let compressed = null;
+  new Compressor(file, {
+    quality: 0.3,
+    convertTypes: ['image/jpeg'],
+    success(result) {
+      const formData = new FormData();
+
+      // The third parameter is required for server
+      formData.append('file', result);
+      console.log('formdata compressor', formData);
+      compressed = new File([result], result?.name, {
+        type: 'image/jpeg',
+      });
+    },
+    error(er) {
+      console.log('compressor error', er);
+    },
+  });
+  return compressed;
+}
+
+async function uploadToStorage(file) {
+  console.log('uploadToStorage ', file);
+  await uploadImg(file, 'reviews').then((res) => {
+    return res;
+  });
+}
 const handleSubmit = async () => {
   try {
     loading.value = true;
+    let urls = [];
     if (photosState.value.length > 0) {
-      for await (const photo of photosState.value) {
-        let compressed = null;
-        await new Compressor(photo, {
-          quality: 0.3,
-          convertTypes: ['image/jpeg'],
-          success(result) {
-            console.log('compressor result', result);
-            console.log('original photo file', photo);
-            const formData = new FormData();
-
-            // The third parameter is required for server
-            formData.append('file', result);
-            console.log('formdata compressor', formData);
-            compressed = new File([result], result?.name, {
-              type: 'image/jpeg',
-            });
-            console.log('compresssed new file', compressed);
-            return uploadImg(compressed, 'reviews').then((res) => {
-              console.log('image uploaded');
-              form.value.photos.push(res);
-            });
-          },
-          error(er) {
-            console.log('compressor error', er);
-          },
-        });
+      for (let i = 0; i < photosState.value.length; i++) {
+        const photo = photosState.value[i];
+        const compressed = await compress(photo);
+        const upload = await uploadToStorage(compressed);
+        urls.push(upload);
       }
     }
     if (isUpdate.value) {
@@ -321,9 +331,12 @@ const handleSubmit = async () => {
     }
     loading.value = false;
     router.push({ name: 'food-review' });
+
+    form.value.photos = url;
   } catch (error) {
     notifyNegative(error.message);
     loading.value = false;
+  } finally {
   }
 };
 const handleCreateRestaurant = async () => {

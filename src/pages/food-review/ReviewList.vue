@@ -1,77 +1,75 @@
 <template>
-  <q-page padding>
-    <div class="q-pa-md">
-      <q-table
-        title="Reviews"
-        :columns="desktopHeader"
-        :rows="items"
-        color="primary"
-        :dense="$q.screen.lt.md"
-        :loading="loading"
-        no-data-label="Sem dados encontrados"
-        row-key="id"
-        class="col-12"
-      >
-        <template v-slot:top-right>
-          <q-btn
-            v-if="$q.platform.is.desktop"
-            color="primary"
-            icon-right="mdi-plus"
-            label="Adicionar"
-            :to="{ name: 'form-food-review' }"
-          />
-
-          <q-btn
-            v-if="$q.platform.is.desktop"
-            flat
-            color="info"
-            icon-right="mdi-floppy"
-            @click="handleExport"
-          />
-        </template>
-
-        <template v-slot:body-cell-amount="props">
-          <q-td :props="props">
-            <div>{{ reais.format(props.value) }}</div>
-          </q-td>
-        </template>
-
-        <template v-slot:body-cell-actions="props">
-          <q-td :props="props" class="q-gutter-x-sm">
-            <q-btn
-              color="info"
-              icon="mdi-pencil"
-              dense
-              size="sm"
-              @click="handleEdit(props.row)"
-            >
-              <q-tooltip> Editar </q-tooltip>
-            </q-btn>
-            <q-btn
-              color="negative"
-              icon="mdi-delete"
-              dense
-              size="sm"
-              @click="handleRemove(props.row)"
-            >
-              <q-tooltip> Editar </q-tooltip>
-            </q-btn>
-          </q-td>
-        </template>
-      </q-table>
-    </div>
-    <q-page-sticky position="bottom-right" :offset="[10, 10]">
+  <q-table
+    title="Reviews"
+    :columns="desktopHeader"
+    :rows="items"
+    color="primary"
+    :dense="$q.screen.lt.md"
+    :loading="loading"
+    no-data-label="Sem dados encontrados"
+    row-key="id"
+    class="col-12"
+    :rows-per-page-options="[0]"
+  >
+    <template v-slot:top-right>
       <q-btn
-        fab
-        icon="mdi-plus"
-        color="secondary"
+        v-if="$q.platform.is.desktop"
+        color="primary"
+        icon-right="mdi-plus"
+        label="Adicionar"
         :to="{ name: 'form-food-review' }"
-        v-if="$q.platform.is.mobile"
-      >
-        <q-tooltip>Adicionar</q-tooltip>
-      </q-btn>
-    </q-page-sticky>
-  </q-page>
+      />
+
+      <q-btn
+        v-if="$q.platform.is.desktop"
+        flat
+        color="info"
+        icon-right="mdi-floppy"
+        @click="handleExport"
+      />
+    </template>
+
+    <template v-slot:body-cell-amount="props">
+      <q-td :props="props">
+        <div>{{ reais.format(props.value) }}</div>
+      </q-td>
+    </template>
+
+    <template v-slot:body-cell-actions="props">
+      <q-td :props="props" class="q-gutter-x-sm">
+        <q-btn
+          color="info"
+          icon="mdi-pencil"
+          dense
+          size="sm"
+          @click="handleEdit(props.row)"
+        >
+          <q-tooltip> Editar </q-tooltip>
+        </q-btn>
+        <q-btn
+          color="negative"
+          icon="mdi-delete"
+          dense
+          size="sm"
+          @click="handleRemove(props.row)"
+        >
+          <q-tooltip> Editar </q-tooltip>
+        </q-btn>
+      </q-td>
+    </template>
+  </q-table>
+
+  <q-page-sticky position="bottom-right" :offset="[10, 10]">
+    <q-btn
+      fab
+      icon="mdi-plus"
+      color="secondary"
+      :to="{ name: 'form-food-review' }"
+      v-if="$q.platform.is.mobile"
+    >
+      <q-tooltip>Adicionar</q-tooltip>
+    </q-btn>
+  </q-page-sticky>
 </template>
 
 <script>
@@ -80,7 +78,8 @@ let desktopHeader = [
     name: 'date',
     align: 'left',
     label: 'Data',
-    field: 'date',
+    field: (row) =>
+      new Intl.DateTimeFormat('pt-BR').format(new Date(row?.date)),
     sortable: true,
   },
   // {
@@ -122,7 +121,7 @@ import useAuthUser from 'src/composables/UseAuthUser';
 import { useQuasar } from 'quasar';
 
 export default defineComponent({
-  name: 'PagePagamento',
+  name: 'PageReviewList',
   // prefetch() {
   //   const store = useUserConfigStore();
   //   projectId = store.selectedProject.id;
@@ -149,12 +148,15 @@ export default defineComponent({
     const handleList = async () => {
       try {
         loading.value = true;
-        const { data, error } = await supabase.from(table).select(
-          `
+        const { data, error } = await supabase
+          .from(table)
+          .select(
+            `
           id,
           valor,
           date, prato, restaurants (nome)        `
-        );
+          )
+          .order('date', { ascending: false });
         // .eq('project_id', projectId);
         // console.log('store access', store.selectedProject.id);
         items.value = data;

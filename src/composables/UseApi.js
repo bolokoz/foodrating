@@ -16,8 +16,11 @@ export default function useApi() {
     return data[0];
   };
 
-  const list = async (table) => {
-    const { data, error } = await supabase.from(table).select('*');
+  const list = async (table, order = 'id') => {
+    const { data, error } = await supabase
+      .from(table)
+      .select('*')
+      .order(order, { ascending: false });
     if (error) throw error;
     return data;
   };
@@ -88,6 +91,13 @@ export default function useApi() {
       .from(table)
       .delete()
       .match({ id: id });
+    if (error) throw error;
+    return data;
+  };
+
+  const rpc = async (rpcName) => {
+    console.log('rpc', rpcName);
+    const { data, error } = await supabase.rpc(rpcName);
     if (error) throw error;
     return data;
   };
@@ -176,5 +186,6 @@ export default function useApi() {
     moveFileToTrash,
     getAccountsFromProject,
     projectById,
+    rpc,
   };
 }
