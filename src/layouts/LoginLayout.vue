@@ -75,7 +75,37 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <RouterView v-slot="{ Component }">
+        <template v-if="Component">
+          <Transition mode="out-in">
+            <div>
+              <Suspense>
+                <!-- main content -->
+                <component :is="Component"></component>
+
+                <!-- loading state -->
+                <template #fallback>
+                  <div>
+                    <q-linear-progress
+                      dark
+                      rounded
+                      indeterminate
+                      color="secondary"
+                      class="q-mt-sm"
+                    />
+                    <q-inner-loading
+                      :showing="true"
+                      label="Carregando..."
+                      label-class="text-teal"
+                      label-style="font-size: 1.1em"
+                    />
+                  </div>
+                </template>
+              </Suspense>
+            </div>
+          </Transition>
+        </template>
+      </RouterView>
     </q-page-container>
   </q-layout>
 </template>

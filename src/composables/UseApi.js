@@ -103,8 +103,8 @@ export default function useApi() {
   };
 
   const uploadImg = async (file, storage) => {
-    console.log('API uploadimg, file = ', file);
-    console.log('API uploadimg, file extension = ', file?.name?.split('.'));
+    // console.log('API uploadimg, file = ', file);
+    // console.log('API uploadimg, file extension = ', file?.name?.split('.'));
     const fileExtension = file?.name?.split('.').pop();
     const fileName = uuidv4() + '.' + fileExtension;
     const { data, error } = await supabase.storage
@@ -120,8 +120,8 @@ export default function useApi() {
   };
   const removeFile = async (filename, storage) => {
     const { data, error } = await supabase.storage
-      .from('receipt')
-      .remove(['ef7f5ef3-5f8b-47de-9fed-2005c654029a']);
+      .from(storage)
+      .remove(filename);
     if (error) throw error;
     return data;
   };
@@ -134,8 +134,8 @@ export default function useApi() {
     //   .from('receipt')
     //   .remove(['ef7f5ef3-5f8b-47de-9fed-2005c654029a']);
     const { publicURL, error } = supabase.storage
-      .from('receipt')
-      .getPublicUrl('ef7f5ef3-5f8b-47de-9fed-2005c654029a');
+      .from(storage)
+      .getPublicUrl(filename);
     console.log(publicURL);
     if (error) throw error;
     return data;

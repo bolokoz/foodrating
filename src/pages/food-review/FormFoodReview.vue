@@ -77,7 +77,7 @@
                 v-model="form.nota_sentimental"
                 size="2em"
                 hint
-                :max="4"
+                :max="3"
                 color="primary"
                 :rules="[(val) => val !== 0 || 'Requerido']"
               />
@@ -279,33 +279,42 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-async function compress(file) {
-  console.log('compress ', file);
+function compress(file) {
+  console.log('compressing ', file);
   let compressed = null;
-  new Compressor(file, {
-    quality: 0.3,
-    convertTypes: ['image/jpeg'],
-    success(result) {
-      const formData = new FormData();
+  return new Promise((resolve, reject) => {
+    new Compressor(file, {
+      quality: 0.3,
+      convertTypes: ['image/jpeg'],
+      success(result) {
+        const formData = new FormData();
 
-      // The third parameter is required for server
-      formData.append('file', result);
-      console.log('formdata compressor', formData);
-      compressed = new File([result], result?.name, {
-        type: 'image/jpeg',
-      });
-    },
-    error(er) {
-      console.log('compressor error', er);
-    },
+        // The third parameter is required for server
+        // formData.append('file', result);
+        // console.log('formdata compressor', formData);
+        compressed = new File([result], result?.name, {
+          type: 'image/jpeg',
+        });
+        resolve(compressed);
+      },
+      error(er) {
+        reject(er);
+        console.log('compressor error', er);
+      },
+    });
   });
-  return compressed;
 }
 
-async function uploadToStorage(file) {
-  console.log('uploadToStorage ', file);
-  await uploadImg(file, 'reviews').then((res) => {
-    return res;
+function uploadToStorage(file) {
+  console.log('uploadingToStorage ', file);
+  return new Promise((resolve, rej) => {
+    try {
+      uploadImg(file, 'reviews').then((res) => {
+        return resolve(res);
+      });
+    } catch (error) {
+      return rej(error);
+    }
   });
 }
 const handleSubmit = async () => {
@@ -315,11 +324,14 @@ const handleSubmit = async () => {
     if (photosState.value.length > 0) {
       for (let i = 0; i < photosState.value.length; i++) {
         const photo = photosState.value[i];
-        const compressed = await compress(photo);
-        const upload = await uploadToStorage(compressed);
-        urls.push(upload);
+        await compress(photo)
+          .then((compressed) => uploadToStorage(compressed))
+          .then((url) => {
+            urls.push(url);
+          });
       }
     }
+    form.value.photos = urls;
     if (isUpdate.value) {
       console.log('update', form.value);
       await update(table, form.value);
@@ -329,14 +341,12 @@ const handleSubmit = async () => {
       await post(table, form.value);
       notifySuccess('Adicionado com Sucesso');
     }
-    loading.value = false;
-    router.push({ name: 'food-review' });
-
-    form.value.photos = url;
   } catch (error) {
-    notifyNegative(error.message);
+    notifyNegative(error);
     loading.value = false;
   } finally {
+    loading.value = false;
+    router.push({ name: 'food-review' });
   }
 };
 const handleCreateRestaurant = async () => {
