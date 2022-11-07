@@ -3,15 +3,29 @@
     <div class="full-width item-center">
       <q-list>
         <q-expansion-item
-          v-for="(rest, i) in categorias"
+          v-for="(cat, i) in categorias"
           :key="i"
           popup
-          :label="rest[0].tipo"
-          header-class="text-primary text-h6 text-weight-bold text-capitalize"
-          :caption="`Reviews: ${rest.length}`"
+          :label="cat[0].tipo"
+          header-class="text-orange text-h6 text-weight-bold text-capitalize"
+          :caption="`Reviews: ${cat.length}`"
         >
+          <q-list bordered separator>
+            <q-item
+              v-for="rev in cat"
+              :key="rev.id"
+              clickable
+              v-ripple
+              class="q-mx-md"
+            >
+              <q-item-section>
+                <q-item-label overline>{{ rev.prato }}</q-item-label>
+                <q-item-label>{{ rev.nota_sentimental }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
           <q-separator />
-          <review-card v-for="rev in rest" :key="rev.id" :review="rev" />
+          <!-- <review-card v-for="rev in rest" :key="rev.id" :review="rev" /> -->
           <!-- <q-card v-for="rev in rest" :key="rev.id">
             <q-card-section>{{ rev.prato }}</q-card-section>
           </q-card> -->

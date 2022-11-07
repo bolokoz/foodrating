@@ -8,6 +8,7 @@
           popup
           :label="rest[0].restaurants.nome"
           :caption="`Reviews: ${rest.length}`"
+          header-class="text-orange text-h6 text-weight-bold text-capitalize"
         >
           <q-separator />
           <review-card v-for="rev in rest" :key="rev.id" :review="rev" />
