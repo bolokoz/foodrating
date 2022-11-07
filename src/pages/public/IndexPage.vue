@@ -32,7 +32,7 @@ const handleListOptions = async () => {
     const { data, error } = await supabase
       .from('reviews')
       .select(
-        'id,prato, restaurants(nome), nota_sentimental, valor, date, obs_sentimental, photos, obs_sentimental'
+        'id,prato, restaurants(nome), nota_sentimental, valor, tipo, date, periodo, obs_sentimental, photos'
       )
       .order('date', { ascending: false });
     reviews.value = data;

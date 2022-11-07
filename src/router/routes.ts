@@ -48,6 +48,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/public/RestaurantList.vue'),
       },
       {
+        path: 'categorias',
+        name: 'categorias',
+        component: () => import('pages/public/CategoriasPage.vue'),
+      },
+      {
         path: 'login',
         name: 'login',
         component: () => import('pages/Login.vue'),
